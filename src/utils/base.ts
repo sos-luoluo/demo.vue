@@ -82,14 +82,14 @@ export class Deferred {
   constructor() {
     this.state = 0;
   }
-  resolve(...arg:any[]) {
+  resolve(...arg: any[]) {
     if (this.state === 0) {
       this.state = 2;
       this.param = arg;
     }
     this.check();
   }
-  reject(...arg:any[]) {
+  reject(...arg: any[]) {
     if (this.state === 0) {
       this.state = 1;
       this.param = arguments;
@@ -134,15 +134,15 @@ export class Deferred {
  */
 export function deferredAll() {
   const def = new Deferred();
-  const result:any[] = [];
+  const result: any[] = [];
   let state = true;
   let length = arguments.length;
   for (let item of arguments) {
-    item.done(function(res:any) {
+    item.done(function(res: any) {
       result.push(res);
       checked();
     });
-    item.fail(function(res:any) {
+    item.fail(function(res: any) {
       result.push(res);
       state = false;
       checked();
@@ -198,10 +198,11 @@ export function guid() {
  * @param {Array|object} data 原始数据
  * @returns {object} formData
  */
-export function serialize(data: any) {
+export function serialize(data: any):FormData {
   const formData = new FormData();
 
-  function conversion(data: { [x: string]: string | Blob; }, name: string | null | undefined) {
+  function conversion(data: any, name: string | null | undefined
+  ) {
     const isFirst = name === "" || name === undefined || name === null;
     for (let item in data) {
       if (typeof data[item] === "object") {
@@ -220,8 +221,8 @@ export function serialize(data: any) {
  * @param {Array} treeList 原始数据
  * @param {object} treeConfig 配置
  */
-export function convertTree(treeList: { [x: string]: any; }[], treeConfig: any) {
-  const setting = $.extend(
+export function convertTree(treeList: { [x: string]: any }[], treeConfig: any):any[] {
+  const setting = Object.assign(
     {
       rootID: 0, //根节点的值
       Fkey: "fcode", //子节点指向父节点的key
@@ -231,7 +232,7 @@ export function convertTree(treeList: { [x: string]: any; }[], treeConfig: any) 
     treeConfig
   );
 
-  function querySon(condition: any) {
+  function querySon(condition: any):any[] {
     const temp = [];
     for (let i = 0; i < treeList.length; i++) {
       if (treeList[i][setting.Fkey] === condition) {
@@ -261,10 +262,10 @@ const _keyStr =
  */
 export const base64 = {
   // public method for encoding
-  encode: function(input: string) {
-    var output = "";
-    var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-    var i = 0;
+  encode: function(input: string):string {
+    let output = "";
+    let chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+    let i = 0;
     input = this._utf8_encode(input);
     while (i < input.length) {
       chr1 = input.charCodeAt(i++);
@@ -289,7 +290,7 @@ export const base64 = {
     return output;
   },
   // public method for decoding
-  decode: function(input: { replace: (arg0: RegExp, arg1: string) => void; length: number; charAt: { (arg0: number): string; (arg0: number): string; (arg0: number): string; (arg0: number): string; }; }) {
+  decode: function(input:string):string {
     var output = "";
     var chr1, chr2, chr3;
     var enc1, enc2, enc3, enc4;
@@ -315,11 +316,11 @@ export const base64 = {
     return output;
   },
   // private method for UTF-8 encoding
-  _utf8_encode: function(string: { replace: (arg0: RegExp, arg1: string) => void; length: number; charCodeAt: (arg0: number) => void; }) {
-    string = string.replace(/\r\n/g, "\n");
+  _utf8_encode: function(str:string) {
+    str = str.replace(/\r\n/g, "\n");
     var utftext = "";
-    for (var n = 0; n < string.length; n++) {
-      var c = string.charCodeAt(n);
+    for (var n = 0; n < str.length; n++) {
+      var c = str.charCodeAt(n);
       if (c < 128) {
         utftext += String.fromCharCode(c);
       } else if (c > 127 && c < 2048) {
@@ -334,29 +335,29 @@ export const base64 = {
     return utftext;
   },
   // private method for UTF-8 decoding
-  _utf8_decode: function(utftext: { length: number; charCodeAt: { (arg0: number): number; (arg0: number): void; (arg0: number): void; (arg0: number): void; }; }) {
-    var string = "";
-    var i = 0;
-    var c = (c1 = c2 = 0);
+  _utf8_decode: function(utftext: string):string {
+    let str = "";
+    let i = 0;
+    let c = 0, c3 =0, c2 = 0;
     while (i < utftext.length) {
       c = utftext.charCodeAt(i);
       if (c < 128) {
-        string += String.fromCharCode(c);
+        str += String.fromCharCode(c);
         i++;
       } else if (c > 191 && c < 224) {
         c2 = utftext.charCodeAt(i + 1);
-        string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+        str += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
         i += 2;
       } else {
         c2 = utftext.charCodeAt(i + 1);
         c3 = utftext.charCodeAt(i + 2);
-        string += String.fromCharCode(
+        str += String.fromCharCode(
           ((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63)
         );
         i += 3;
       }
     }
-    return string;
+    return str;
   }
 };
 
@@ -366,7 +367,11 @@ export const base64 = {
  * @param {string} url url地址
  * @param {function} callBack 回调函数
  */
-export function getFile(url: string, type: any, callBack: (arg0: Blob, arg1: { type: any; }) => void) {
+export function getFile(
+  url: string,
+  type: any,
+  callBack: (arg0: Blob, arg1: { type: any }) => void
+) {
   const XHR = new XMLHttpRequest();
   XHR.open("GET", url, true);
   XHR.responseType = "arraybuffer";
@@ -394,11 +399,13 @@ export function getFile(url: string, type: any, callBack: (arg0: Blob, arg1: { t
  * @param {function} terminate 关闭多线程方法
  */
 export class WorkerManage {
+  config:any
+  worker:Worker | undefined
   constructor(options: any) {
     this.config = Object.assign(
       {
-        version: "0.1",
-        url: "./js/worker.js",
+        version: "1.0",
+        url: "/js/worker.js",
         name: "app",
         to: "worker",
         handle: {}
@@ -409,17 +416,24 @@ export class WorkerManage {
   }
   init() {
     this.worker = new Worker(this.config.url);
-    this.worker.onmessage = (data: { data: any; }) => {
+    this.worker.onmessage = (data: { data: any }) => {
       this.analysisData(data.data);
     };
   }
-  sendData(data: { version: any; timestamp: number; from: any; to: any; key: any; handle: any; }) {
+  sendData(data: {
+    version: any;
+    timestamp: number;
+    from: any;
+    to: any;
+    key: string;
+    handle: any;
+  }) {
     if (!this.worker) {
       this.init();
     }
-    this.worker.postMessage(data);
+    (<Worker>this.worker).postMessage(data);
   }
-  packageData(data: { data: any; key: any; }) {
+  packageData(data: { data: any; key: string }) {
     let message = {
       version: this.config.version,
       timestamp: new Date().getTime(),
@@ -430,7 +444,12 @@ export class WorkerManage {
     };
     this.sendData(message);
   }
-  analysisData(result: { to: any; timestamp: number; key: string | number; data: { code: number; data: any; }; }) {
+  analysisData(result: {
+    to: any;
+    timestamp: number;
+    key: string | number;
+    data: { code: number; data: any };
+  }) {
     try {
       if (result.to !== this.config.name) {
         throw new Error("name error");
@@ -467,11 +486,11 @@ export class WorkerManage {
         name: name,
         data: data
       },
-      key: key
+      key: key.toString()
     });
   }
   terminate() {
-    this.worker.terminate();
+    (<Worker>this.worker).terminate();
     this.worker = undefined;
   }
 }
@@ -479,7 +498,7 @@ export class WorkerManage {
 /**
  * 判断运行环境
  */
-export function userAgent() {
+export function userAgent():string {
   var wx = (function() {
     return navigator.userAgent.toLowerCase().indexOf("micromessenger") !== -1;
   })();

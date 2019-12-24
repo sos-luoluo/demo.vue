@@ -3,6 +3,7 @@
     <img alt="Vue logo" src="./assets/logo.png" />
     语言测试
     <div>{{ $t("msg") }}</div>
+    <!-- <pageLoading :visible="true"></pageLoading> -->
     <Tinymce></Tinymce>
     <div id="nav">
       <router-link to="/">Home</router-link> |
@@ -15,10 +16,17 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import Tinymce from "@/components/TinyMCE/index.vue";
+import PageLoading from "@/components/PageLoading/index";
+
+PageLoading.service.show();
+setTimeout(function() {
+  PageLoading.service.hide();
+}, 5000);
 
 @Component({
   components: {
-    Tinymce
+    Tinymce,
+    PageLoading
   }
 })
 export default class App extends Vue {}
