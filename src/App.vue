@@ -1,10 +1,11 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
+    <img alt="Vue logo" src="./assets/logo.png" @click="show" />
     语言测试
     <div>{{ $t("msg") }}</div>
     <!-- <pageLoading :visible="true"></pageLoading> -->
-    <Tinymce></Tinymce>
+    <!-- <Tinymce></Tinymce> -->
+    <Tips ref="tips" :text="'这是提示'"></Tips>
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
@@ -16,20 +17,27 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import Tinymce from "@/components/TinyMCE/index.vue";
-import PageLoading from "@/components/PageLoading/index";
+import AjaxLoading from "@/components/AjaxLoading/index";
+import Tips from "@/components/Tips/tips.vue";
 
-PageLoading.service.show();
-setTimeout(function() {
-  PageLoading.service.hide();
-}, 5000);
+// AjaxLoading.service.show("加载中");
+// setTimeout(function() {
+//   AjaxLoading.service.hide();
+// }, 1000);
 
 @Component({
   components: {
     Tinymce,
-    PageLoading
+    AjaxLoading,
+    Tips
   }
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  show() {
+    const tips = this.$refs.tips;
+    tips.show("提示信息");
+  }
+}
 </script>
 
 <style lang="less">

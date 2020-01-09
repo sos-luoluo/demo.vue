@@ -4,7 +4,7 @@ VUEdemo项目需求
 集成图片上传
 富文本编辑与显示、（已完成基本版，还需继续改进）
 svg等组件(已完成)
-包含其它有用自定义组件
+包含其它有用自定义组件(pageloading,ajaxloading,tips,liststate,confirm)
 移植样式（已迁移）
 公共方法等(基础方法已迁移)
 ajax封装
