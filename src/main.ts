@@ -6,6 +6,7 @@ import i18n from "./locale/index";
 import ViewUI from "view-design";
 import "view-design/dist/styles/iview.css";
 import "./icons"; // icon
+import "animate.css";
 
 Vue.config.productionTip = false;
 Vue.use(ViewUI);

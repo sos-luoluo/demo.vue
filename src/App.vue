@@ -5,7 +5,9 @@
     <div>{{ $t("msg") }}</div>
     <!-- <pageLoading :visible="true"></pageLoading> -->
     <!-- <Tinymce></Tinymce> -->
-    <Tips ref="tips" :text="'这是提示'"></Tips>
+    <!-- <Tips ref="tips" :text="'这是提示'"></Tips> -->
+    <!-- <Confirm :text="'sdfdsf'" @confirm="tips"></Confirm> -->
+    <Upload></Upload>
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
@@ -19,23 +21,37 @@ import { Component, Vue } from "vue-property-decorator";
 import Tinymce from "@/components/TinyMCE/index.vue";
 import AjaxLoading from "@/components/AjaxLoading/index";
 import Tips from "@/components/Tips/tips.vue";
+import model from "@/components/Confirm/index";
+import Upload from "@/components/Upload/upload.vue";
 
 // AjaxLoading.service.show("加载中");
 // setTimeout(function() {
 //   AjaxLoading.service.hide();
 // }, 1000);
 
+// model()
+//   .then(res => {
+//     console.log("yesyes");
+//   })
+//   .catch(err => {
+//     console.log("no");
+//   });
+
 @Component({
   components: {
     Tinymce,
     AjaxLoading,
-    Tips
+    Tips,
+    Upload
   }
 })
 export default class App extends Vue {
   show() {
-    const tips = this.$refs.tips;
+    const tips: any = this.$refs.tips;
     tips.show("提示信息");
+  }
+  tips() {
+    console.log("点击了确认");
   }
 }
 </script>
