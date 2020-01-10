@@ -1,5 +1,5 @@
 <template>
-  <div class="upload" v-if="visible">
+  <div class="upload">
     <div class="img_box">
       <div
         class="img"
@@ -7,11 +7,11 @@
         :key="i"
         :style="{ backgroundImage: 'url(' + item + ')' }"
       >
-        <div class="icon">×</div>
+        <div class="icon" @click="delItem(i)">×</div>
       </div>
     </div>
-    <div class="choose_box">
-      <input type="file" class="input" />
+    <div class="choose_box" v-show="imgList.length < maxLength">
+      <input type="file" class="input" @change="change" />
       <div class="btn">点击上传</div>
     </div>
     <div class="cropper_pop"></div>
@@ -21,26 +21,51 @@
 <script lang="ts">
 import { Component, Prop, Vue, Ref } from "vue-property-decorator";
 
+const uploadApi = function(file: File) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve({
+        data: "http://192.168.0.187:8001/images/pic_logo1.png"
+      });
+    }, 1000);
+  });
+};
+
 @Component
 export default class ListState extends Vue {
   @Prop({ default: 1 }) maxLength!: number;
   @Prop({ default: false }) isCropper!: boolean;
-  @Prop([String, Array]) value: string | string[] = "";
+  @Prop([String, Array]) url: undefined | string | string[];
   @Prop(String) uploadImgUrl!: string;
-  visible: boolean | undefined = true;
-  imgList: Array<string> = ["http://192.168.0.187:8001/images/pic_logo1.png"];
+  imgList: Array<string> = [];
   created() {
-    this.setValue(this.value);
+    this.setValue(this.url);
   }
-  setValue(val: string | string[]) {
-    if (typeof val === "string") {
-      if (val) {
-        this.imgList = [val];
-      } else {
-        this.imgList = [];
-      }
-    } else if (typeof val === "object") {
-      this.imgList = val;
+  setValue(url: undefined | string | string[]) {
+    if (url && typeof url === "string") {
+      this.imgList = [url];
+    } else if (url && typeof url === "object") {
+      this.imgList = Object.assign([], url);
+    } else {
+      this.imgList = [];
+    }
+  }
+  change(e: any) {
+    const name = e.currentTarget.files[0].name;
+    const type = e.currentTarget.files[0].type;
+    let files = e.currentTarget.files;
+    uploadApi(e.currentTarget.files[0]).then((res: any) => {
+      this.imgList.push(res.data);
+    });
+  }
+  delItem(index: number) {
+    this.imgList.splice(index, 1);
+  }
+  getValue(): string | string[] {
+    if (this.maxLength == 1) {
+      return this.imgList[0];
+    } else {
+      return this.imgList;
     }
   }
 }

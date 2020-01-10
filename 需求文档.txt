@@ -1,7 +1,7 @@
 VUEdemo项目需求
 使用vue3.0为基础架设，使用vuex，vue-router(3.0未发布，暂时使用2.6,已完成基本代码)
 
-集成图片上传
+集成图片上传(裁剪还没做)
 富文本编辑与显示、（已完成基本版，还需继续改进）
 svg等组件(已完成)
 包含其它有用自定义组件(pageloading,ajaxloading,tips,liststate,confirm)(已完成)
