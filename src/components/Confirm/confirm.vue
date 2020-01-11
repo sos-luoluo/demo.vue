@@ -2,8 +2,8 @@
   <div class="confirm" v-if="visible">
     <div class="content">
       <div class="close" @click="cancle">×</div>
-      <div class="title">标题</div>
-      <div class="text">文字内容</div>
+      <div class="title">{{ title }}</div>
+      <div class="text">{{ text }}</div>
       <div class="btn_box">
         <div class="btn" @click="confirm">确定</div>
         <div class="btn" @click="cancle">取消</div>

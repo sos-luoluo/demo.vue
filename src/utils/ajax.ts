@@ -4,9 +4,15 @@
  * @author [luoluo]
  * @version 2.0.0
  */
-import { Message } from "view-design";
+import qs from "qs";
+import tips from "@/components/Tips/index";
+import ajaxLoading from "@/components/AjaxLoading/index";
+import confirm from "@/components/Confirm/index";
 import axios from "axios";
 import { ajaxConfig } from "./config";
+const CancelToken = axios.CancelToken;
+import { ajaxOptions } from "./interface.d";
+// 缓存锁
 const ajaxLock: any = {};
 // 序列化参数
 function objectToFormData(
@@ -53,30 +59,31 @@ function objectToFormData(
   return formData;
 }
 
-const ajax = axios.create({
+const request = axios.create({
   baseURL: ajaxConfig.urlHead,
   timeout: 30000,
   xsrfCookieName: "JSESSIONID",
+  xsrfHeaderName: "X-XSRF-TOKEN",
+  params: {},
+  paramsSerializer: function(params) {
+    return qs.stringify(params);
+  },
+  transformRequest: [
+    function(data) {
+      return data;
+    }
+  ],
+  transformResponse: [
+    function(data) {
+      return data;
+    }
+  ],
+  headers: {},
   withCredentials: true // 使前台能够保存cookie
 });
-
 // 添加请求拦截器
-ajax.interceptors.request.use(
+request.interceptors.request.use(
   (config: any) => {
-    if (config.data && config.data.lockId) {
-      if (ajaxLock[config.data.lockId]) {
-        throw new Error("请勿重复操作");
-      } else {
-        ajaxLock[config.data.lockId] = true;
-        config.id = config.data.lockId;
-        delete config.data.lockId;
-      }
-    }
-    // 是否需要序列化数据
-    if (config.processData) {
-      delete config.processData;
-      config.data = objectToFormData(config.data);
-    }
     // 在发送请求之前做些什么
     return config;
   },
@@ -85,28 +92,105 @@ ajax.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
 // 添加响应拦截器
-ajax.interceptors.response.use(
+request.interceptors.response.use(
   (res: any) => {
-    // 对响应数据做点什么
-    if (res.config.id) {
-      delete ajaxLock[res.config.id];
+    try {
+      res.data = JSON.parse(res.data);
+    } catch (err) {
+      res.data = {};
     }
-    if (res.data.code === 0) {
-      return res;
+    if (res.status == 200 && res.data.code === 0) {
+      return res.data;
+    } else if (res.data.code === 10000) {
+      return Promise.reject({
+        msg: "用户未登录"
+      });
     } else {
-      if (res.data.code === 10000) {
-        // 处理登录相关的错误
-      } else {
-        // 其它错误弹出错误信息
-      }
       return Promise.reject(res);
     }
   },
   function(error) {
     // 对响应错误做点什么
-    (<any>Message).error("系统错误，请稍后再试");
+    tips("系统错误，请稍后再试");
     return Promise.reject(error);
   }
 );
+/**
+ * 请求包装
+ * @overview 包装了id锁定和ajaxloading
+ */
+function ajaxWrap(params: any) {
+  const { url, data, method, id, hasLoading, confirmText, ...options } = params;
+  if (id) {
+    if (ajaxLock[id]) {
+      return Promise.reject({
+        msg: "请勿重复操作"
+      });
+    } else {
+      ajaxLock[id] = true;
+    }
+  }
+  if (hasLoading) {
+    ajaxLoading.service.show();
+  }
+  // const token=localStorage.getItem('token')
+  // options.headers.token=token
+  let result: Promise<any>;
+  if (method && method.toLocaleUpperCase() == "GET") {
+    result = request.get(url, {
+      params: data
+    });
+  } else {
+    result = request.post(url, data, options);
+  }
+  return result
+    .then(res => {
+      if (id) {
+        ajaxLock[id] = false;
+      }
+      if (hasLoading) {
+        ajaxLoading.service.hide();
+      }
+      return Promise.resolve(res);
+    })
+    .catch(err => {
+      if (id) {
+        ajaxLock[id] = false;
+      }
+      if (hasLoading) {
+        ajaxLoading.service.hide();
+      }
+      return Promise.reject(err);
+    });
+}
+/**
+ * 普通ajax请求
+ * @overview 包装了确认对话框
+ */
+export function ajax(params: ajaxOptions) {
+  const { confirmText, ...options } = params;
+  if (confirmText) {
+    return new Promise((resolve, reject) => {
+      return confirm({
+        text: confirmText
+      })
+        .then(res => {
+          ajaxWrap(options)
+            .then(res => {
+              resolve(res);
+            })
+            .catch(err => {
+              reject(err);
+            });
+        })
+        .catch(err => {
+          reject({
+            msg: "用户取消了操作"
+          });
+        });
+    });
+  } else {
+    return ajaxWrap(params);
+  }
+}

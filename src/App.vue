@@ -23,28 +23,8 @@ import AjaxLoading from "@/components/AjaxLoading/index";
 import Tips from "@/components/Tips/tips.vue";
 import model from "@/components/Confirm/index";
 import Upload from "@/components/Upload/upload.vue";
+import { ajax } from "@/utils/ajax";
 
-// AjaxLoading.service.show("加载中");
-// setTimeout(function() {
-//   AjaxLoading.service.hide();
-// }, 1000);
-
-// model()
-//   .then(res => {
-//     console.log("yesyes");
-//   })
-//   .catch(err => {
-//     console.log("no");
-//   });
-
-@Component({
-  components: {
-    Tinymce,
-    AjaxLoading,
-    Tips,
-    Upload
-  }
-})
 export default class App extends Vue {
   show() {
     const tips: any = this.$refs.tips;

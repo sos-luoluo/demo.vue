@@ -18,4 +18,4 @@ class FullscreenTips implements loadingComponent {
   }
 }
 
-export default new FullscreenTips();
+export default new FullscreenTips().show;
