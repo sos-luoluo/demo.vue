@@ -21,3 +21,27 @@ export interface ajaxOptions {
   url: string;
   data?: any;
 }
+/**
+ * 日志格式
+ * @property msg 信息
+ * @property type 类型
+ * @property time 时间戳
+ */
+export interface logItem {
+  msg?: string;
+  type: "error" | "log" | "warn";
+  time: number;
+}
+/**
+ * 列表请求初始化参数
+ * @property msg 信息
+ * @property type 类型
+ * @property time 时间戳
+ */
+export interface listAjaxOptions {
+  url: string;
+  data?: any;
+  method?: "POST" | "GET";
+  current?: number;
+  size?: number;
+}

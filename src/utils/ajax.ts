@@ -11,7 +11,7 @@ import confirm from "@/components/Confirm/index";
 import axios from "axios";
 import { ajaxConfig } from "./config";
 const CancelToken = axios.CancelToken;
-import { ajaxOptions } from "./interface.d";
+import { ajaxOptions, listAjaxOptions } from "./interface.d";
 // 缓存锁
 const ajaxLock: any = {};
 // 序列化参数
@@ -192,5 +192,101 @@ export function ajax(params: ajaxOptions) {
     });
   } else {
     return ajaxWrap(params);
+  }
+}
+/**
+ * 列表请求方法
+ * @overview 列表请求方法
+ * @param options 初始化配置信息
+ * @property listState 列表状态
+ * @property pageTotal 页码总量
+ * @property config 配置信息
+ * @property getList 获取数据
+ * @property delData 删除参数
+ * @property changeData 改变参数
+ * @property changeURL 改变url
+ * @property refreshPage 刷新列表
+ */
+export class listAjax {
+  listState: number = 0; // 0 加载中 1 正常加载 2 暂无数据 3 已无更多
+  pageTotal: number = 1;
+  config: listAjaxOptions;
+  constructor(options: listAjaxOptions) {
+    this.config = Object.assign(
+      {
+        data: {},
+        method: "POST",
+        current: 0,
+        size: 10
+      },
+      options
+    );
+  }
+  getList(current?: number) {
+    if (this.listState !== 0) {
+      return Promise.reject({
+        msg: "list loading"
+      });
+    }
+    this.listState = 0;
+    if (current && current <= this.pageTotal) {
+      this.config.current = current;
+    } else {
+      (<number>this.config.current)++;
+    }
+    return ajax({
+      url: this.config.url,
+      data: Object.assign(
+        {
+          current: this.config.current,
+          size: this.config.size
+        },
+        this.config.data
+      ),
+      method: this.config.method
+    })
+      .then(res => {
+        this.pageTotal = res.data.pages;
+        if (this.pageTotal === 0) {
+          this.listState = 2;
+        } else if (this.pageTotal === this.config.current) {
+          this.listState = 3;
+        } else {
+          this.listState = 0;
+        }
+        return res;
+      })
+      .catch(err => {
+        this.listState = 0;
+        return Promise.reject(err);
+      });
+  }
+  /**
+   * 新增或改变参数
+   * @param data 参数
+   */
+  changeData(data: object) {
+    this.config.data = Object.assign(true, this.config.data, data);
+  }
+  /**
+   * 删除参数
+   * @param name 参数名
+   */
+  delData(name: string) {
+    delete this.config.data[name];
+  }
+  /**
+   * 改变请求url地址
+   * @param url 新的请求地址
+   */
+  changeURL(url: string) {
+    this.config.url = url;
+  }
+  /**
+   * 重置列表,列表状态
+   */
+  refreshPage() {
+    this.config.current = 0;
+    this.getList(0);
   }
 }

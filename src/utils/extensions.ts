@@ -89,10 +89,8 @@ Object.defineProperty(Object.prototype, "isArray", {
   value: function(): boolean {
     return (
       typeof this === "object" &&
-      typeof this.length === "number" &&
+      typeof (<number | undefined>this.length) === "number" &&
       typeof this.splice === "function"
     );
   }
 });
-
-export default undefined;

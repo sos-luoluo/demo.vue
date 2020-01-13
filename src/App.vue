@@ -2,10 +2,10 @@
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png" @click="show" />
     语言测试
-    <div>{{ $t("msg") }}</div>
+    <!-- <div>{{ $t("msg") }}</div> -->
     <!-- <pageLoading :visible="true"></pageLoading> -->
     <!-- <Tinymce></Tinymce> -->
-    <!-- <Tips ref="tips" :text="'这是提示'"></Tips> -->
+    <Tips ref="tips" :text="'这是提示'"></Tips>
     <!-- <Confirm :text="'sdfdsf'" @confirm="tips"></Confirm> -->
     <Upload></Upload>
     <div id="nav">
@@ -25,14 +25,20 @@ import model from "@/components/Confirm/index";
 import Upload from "@/components/Upload/upload.vue";
 import { ajax } from "@/utils/ajax";
 
+@Component({
+  components: {
+    Upload,
+    Tips
+  }
+})
 export default class App extends Vue {
   show() {
     const tips: any = this.$refs.tips;
     tips.show("提示信息");
   }
-  tips() {
-    console.log("点击了确认");
-  }
+  // tips() {
+  //   console.log("点击了确认");
+  // }
 }
 </script>
 
