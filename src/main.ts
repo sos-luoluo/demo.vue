@@ -6,6 +6,7 @@ import store from "./store";
 import i18n from "./locale/index";
 import ViewUI from "view-design";
 import "view-design/dist/styles/iview.css";
+import { ValidationProvider } from "vee-validate";
 import "./icons"; // icon
 import "animate.css";
 import logManager from "@/utils/log";
@@ -18,6 +19,8 @@ logManager.pushMsg({
 
 Vue.config.productionTip = false;
 Vue.use(ViewUI);
+
+Vue.component("ValidationProvider", ValidationProvider);
 
 new Vue({
   router,

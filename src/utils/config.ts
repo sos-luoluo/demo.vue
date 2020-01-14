@@ -91,5 +91,5 @@ export const mobileConfig = {
  */
 export const key = {
   tokenKey: "Authorization",
-  key: "kIfd0p0a0099ksls"
+  key: ""
 };
