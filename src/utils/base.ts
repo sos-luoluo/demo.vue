@@ -194,15 +194,32 @@ export function guid() {
 }
 
 /**
+ * 缓存函数
+ * @overview 缓存函数，用来缓存结果
+ * @param {function} func 需要缓存的函数
+ * @param {object} obj this
+ */
+export function mmoize(func: Function, obj?: object) {
+  obj = obj || {};
+  let cache: any = {};
+  return function() {
+    const key: string = Array.prototype.join.call(arguments, "_");
+    if (!(key in cache)) {
+      cache[key] = func.apply(obj, arguments);
+    }
+    return cache[key];
+  };
+}
+
+/**
  * 序列化数据用于Ajax,数据会被转换为key/value形式
  * @param {Array|object} data 原始数据
  * @returns {object} formData
  */
-export function serialize(data: any):FormData {
+export function serialize(data: any): FormData {
   const formData = new FormData();
 
-  function conversion(data: any, name: string | null | undefined
-  ) {
+  function conversion(data: any, name: string | null | undefined) {
     const isFirst = name === "" || name === undefined || name === null;
     for (let item in data) {
       if (typeof data[item] === "object") {
@@ -221,7 +238,10 @@ export function serialize(data: any):FormData {
  * @param {Array} treeList 原始数据
  * @param {object} treeConfig 配置
  */
-export function convertTree(treeList: { [x: string]: any }[], treeConfig: any):any[] {
+export function convertTree(
+  treeList: { [x: string]: any }[],
+  treeConfig: any
+): any[] {
   const setting = Object.assign(
     {
       rootID: 0, //根节点的值
@@ -232,7 +252,7 @@ export function convertTree(treeList: { [x: string]: any }[], treeConfig: any):a
     treeConfig
   );
 
-  function querySon(condition: any):any[] {
+  function querySon(condition: any): any[] {
     const temp = [];
     for (let i = 0; i < treeList.length; i++) {
       if (treeList[i][setting.Fkey] === condition) {
@@ -262,7 +282,7 @@ const _keyStr =
  */
 export const base64 = {
   // public method for encoding
-  encode: function(input: string):string {
+  encode: function(input: string): string {
     let output = "";
     let chr1, chr2, chr3, enc1, enc2, enc3, enc4;
     let i = 0;
@@ -290,7 +310,7 @@ export const base64 = {
     return output;
   },
   // public method for decoding
-  decode: function(input:string):string {
+  decode: function(input: string): string {
     var output = "";
     var chr1, chr2, chr3;
     var enc1, enc2, enc3, enc4;
@@ -316,7 +336,7 @@ export const base64 = {
     return output;
   },
   // private method for UTF-8 encoding
-  _utf8_encode: function(str:string) {
+  _utf8_encode: function(str: string) {
     str = str.replace(/\r\n/g, "\n");
     var utftext = "";
     for (var n = 0; n < str.length; n++) {
@@ -335,10 +355,12 @@ export const base64 = {
     return utftext;
   },
   // private method for UTF-8 decoding
-  _utf8_decode: function(utftext: string):string {
+  _utf8_decode: function(utftext: string): string {
     let str = "";
     let i = 0;
-    let c = 0, c3 =0, c2 = 0;
+    let c = 0,
+      c3 = 0,
+      c2 = 0;
     while (i < utftext.length) {
       c = utftext.charCodeAt(i);
       if (c < 128) {
@@ -399,8 +421,8 @@ export function getFile(
  * @param {function} terminate 关闭多线程方法
  */
 export class WorkerManage {
-  config:any
-  worker:Worker | undefined
+  config: any;
+  worker: Worker | undefined;
   constructor(options: any) {
     this.config = Object.assign(
       {
@@ -498,7 +520,7 @@ export class WorkerManage {
 /**
  * 判断运行环境
  */
-export function userAgent():string {
+export function userAgent(): string {
   var wx = (function() {
     return navigator.userAgent.toLowerCase().indexOf("micromessenger") !== -1;
   })();

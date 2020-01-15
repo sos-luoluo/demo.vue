@@ -80,7 +80,7 @@ export default {
    *@param {Array} arr 数组
    *@param {string} key key,可选
    */
-  getArrayPeak(arr: Array<any>, key?: string):{max:any,min:any} {
+  getArrayPeak(arr: Array<any>, key?: string): { max: any; min: any } {
     let max = arr[0];
     let min = arr[0];
     for (let i = 0; i < arr.length; i++) {
@@ -110,7 +110,7 @@ export default {
    * 数字分段显示
    * @param {string} num 输入数字
    */
-  numberSection(num:number):string {
+  numberSection(num: number): string {
     const numArr = num.toString().split("");
     const result = [];
     let total = 0;
@@ -127,14 +127,14 @@ export default {
    * 只取一个图片地址
    * @param {number} urlString 输入地址
    */
-  onlyOneImg: function(urlString:string):string {
+  onlyOneImg: function(urlString: string): string {
     return urlString.split(",")[0];
   },
   /**
    * 返回随机字符串
    * @param {number} length 长度
    */
-  randomChars: function(length:number):string {
+  randomChars: function(length: number): string {
     let str = "";
     const maxRandom = wordLib.charAndNum.length;
     for (var i = 0; i < length; i++) {
@@ -147,7 +147,7 @@ export default {
    * @param {number} time 时间
    * @param {string} format 输出格式
    */
-  timeIntervalChange: function(time:number, format:string):string {
+  timeIntervalChange: function(time: number, format: string): string {
     format = format.replace(/[d]{2}/i, Math.floor(time / 86400).toString());
     format = format.replace(
       /[h]{2}/i,
@@ -157,14 +157,17 @@ export default {
       /[m]{2}/i,
       this.doubleDigit(Math.floor((time % 3600) / 60)).toString()
     );
-    format = format.replace(/[s]{2}/i, this.doubleDigit(Math.floor(time % 60)).toString());
+    format = format.replace(
+      /[s]{2}/i,
+      this.doubleDigit(Math.floor(time % 60)).toString()
+    );
     return format;
   },
   /**
    * 时间差转化，格式为几分钟之前，几个小时之前，具体时间
    * @param {number} time 时间
    */
-  timeAgo: function(time:number):string {
+  timeAgo: function(time: number): string {
     const difference = new Date().getTime() - time;
     if (difference < 60 * 60 * 1000) {
       return Math.floor(difference / (1000 * 60)) + "分钟以前";
@@ -178,7 +181,7 @@ export default {
    * 获取url参数
    * @param {string} name 参数名称
    */
-  getUrlParam: function(name:string):string|null {
+  getUrlParam: function(name: string): string | null {
     let url = window.location.href;
     const reg = new RegExp("(^|[&|?])" + name + "=([^[&|\\#]*)([&|#]|$)", "i");
     const r = url.match(reg);
@@ -192,10 +195,10 @@ export default {
    * @param {number} num 输入十进制数字
    * @param {number} log 输出进制
    */
-  changeLog(num:number, log:number):string {
-    const int:number[] = [];
+  changeLog(num: number, log: number): string {
+    const int: number[] = [];
     function getInt() {
-      const now:number = num % log;
+      const now: number = num % log;
       int.unshift(now);
       num = Math.floor(num / log);
       if (num > 0) {
@@ -203,16 +206,18 @@ export default {
       }
     }
     getInt();
-    return int.map(function(item:number) {
-      return wordLib.charAndNum[item];
-    }).join("");
+    return int
+      .map(function(item: number) {
+        return wordLib.charAndNum[item];
+      })
+      .join("");
   },
   /**
    *@desc 判断是否为微信环境
    *@author 王磊
    *@date 2019/07/08 20:26:56
    */
-  isWeiXin: function():boolean {
+  isWeiXin: function(): boolean {
     var ua = window.navigator.userAgent.toLowerCase();
     if (ua.match(/MicroMessenger/i)) {
       return true;
@@ -224,7 +229,7 @@ export default {
    * 获取纯净的数据模型
    * @param {number} data 输入数据
    */
-  getPureModel(data:any):any {
+  getPureModel(data: any): any {
     return JSON.parse(JSON.stringify(data));
   },
   /**
@@ -232,7 +237,7 @@ export default {
    * @param {string} url 跳转地址
    * @param {boolean} isReplace 是否保存本页历史记录
    */
-  urlJump: function(url:string, isReplace?:boolean):void {
+  urlJump: function(url: string, isReplace?: boolean): void {
     if (isReplace === true) {
       window.location.replace(url);
     } else {
@@ -243,19 +248,38 @@ export default {
    * 数据单位转换，会转化为亿、万的单位,分隔数字
    * @param {number} num 输入数字
    */
-  numberConvert(value:number):any {
+  numberConvert(value: number): any {
     if (isNaN(value)) {
       return value;
     }
     if (value > 100000000) {
-      let res = ((value / 100000000).toFixed(2)).toString().split(".");
-      return this.numberSection(parseInt(res[0])) + (res[1] ? "." + res[1] : "") + "亿";
+      let res = (value / 100000000)
+        .toFixed(2)
+        .toString()
+        .split(".");
+      return (
+        this.numberSection(parseInt(res[0])) +
+        (res[1] ? "." + res[1] : "") +
+        "亿"
+      );
     } else if (value > 10000) {
-      let res = ((value / 10000).toFixed(2)).toString().split(".");
-      return this.numberSection(parseInt(res[0])) + (res[1] ? "." + res[1] : "") + "万";
+      let res = (value / 10000)
+        .toFixed(2)
+        .toString()
+        .split(".");
+      return (
+        this.numberSection(parseInt(res[0])) +
+        (res[1] ? "." + res[1] : "") +
+        "万"
+      );
     } else {
-      let res = (value.toFixed(2)).toString().split(".");
-      return this.numberSection(parseInt(res[0])) + (res[1] ? "." + res[1] : "");
+      let res = value
+        .toFixed(2)
+        .toString()
+        .split(".");
+      return (
+        this.numberSection(parseInt(res[0])) + (res[1] ? "." + res[1] : "")
+      );
     }
   },
   /**
@@ -263,9 +287,9 @@ export default {
    * @param {number} num 输入数字
    * @param {number} len 保留数字长度的位数
    */
-  priceConvert(value:number, len:number = 4):number {
+  priceConvert(value: number, len: number = 4): number {
     if (value > 1) {
-      return  parseFloat(value.toFixed(len)) - 0;
+      return parseFloat(value.toFixed(len)) - 0;
     } else if (value < 1 && value > 0.000001) {
       // 最多保留两位有效数字
       let valueString = value.toString().split("");

@@ -5,8 +5,7 @@ import { extend } from "vee-validate";
 import * as rules from "vee-validate/dist/rules";
 import { localize } from "vee-validate";
 import en from "vee-validate/dist/locale/en.json";
-import ar from "vee-validate/dist/locale/ar.json";
-import zh_CN from "vee-validate/dist/locale/ar.json";
+import zh_CN from "vee-validate/dist/locale/zh_CN.json";
 import { regular } from "./constants";
 
 for (let [rule, validation] of Object.entries(rules)) {
@@ -35,10 +34,30 @@ extend("required", {
 });
 
 localize({
-  en,
-  ar,
-  zh_CN
+  ["en-us"]: en,
+  ["zh-cn"]: zh_CN
 });
 let lang = localStorage.getItem("lang");
 
-localize(lang ? lang : "zh_CN");
+localize(lang ? lang : "zh-cn");
+
+/**
+ * 倒计时
+ */
+export function verificationCodeTime(page: any, options?: object) {
+  const config = Object.assign(
+    {
+      time: 60,
+      text: "获取验证码"
+    },
+    options
+  );
+  const stopKey = setInterval(() => {
+    page.pageData.verificationCodetext = config.time + "S";
+    config.time--;
+    if (config.time < 0) {
+      page.pageData.verificationCodetext = config.text;
+      clearInterval(stopKey);
+    }
+  }, 1000);
+}

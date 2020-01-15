@@ -12,15 +12,15 @@
  * @property {string} headPortrait 头像
  */
 export const NPCInfo = {
-  openID: 'oCkn-0LsCAirFyL9nQ80myluoluo',
-  name: '落落',
+  openID: "oCkn-0LsCAirFyL9nQ80myluoluo",
+  name: "落落",
   headPortrait:
-    'https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTI2iasISZ1LOFONyGqyKiaEkbIIvyLPyz9cz1hocv2rcBwgGuqib2Y5BmD3YDSLcsUjc8PQXb9YdsKhg/0'
+    "https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTI2iasISZ1LOFONyGqyKiaEkbIIvyLPyz9cz1hocv2rcBwgGuqib2Y5BmD3YDSLcsUjc8PQXb9YdsKhg/0"
 };
 
-const numLib = '0123456789'.split('');
-const characterLib = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(
-  ''
+const numLib = "0123456789".split("");
+const characterLib = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(
+  ""
 );
 /**
  * 字典库
@@ -34,8 +34,8 @@ export const wordLib = {
   int: numLib,
   char: characterLib,
   charAndNum: numLib.concat(characterLib),
-  week: '日一二三四五六'.split(''),
-  numCn: '零一二三四五六七八九十'.split('')
+  week: "日一二三四五六".split(""),
+  numCn: "零一二三四五六七八九十".split("")
 };
 
 /**
@@ -59,7 +59,7 @@ export const regular = {
   email: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
   url: /[a-zA-z]+:\/\/[^\s]*/,
   id: /^(\d{6})(\d{4})(\d{2})(\d{2})(\d{3})([0-9]|X)$/,
-  password: /^[a-zA-Z0-9_~！@#￥%…&—=【】、《》<>:;"'\-\*\.\?\+\$\^\[\]\(\)\{\}\|\\\/]{6,20}$/,
+  password: /(?=.*([a-zA-Z].*))(?=.*[0-9].*)[a-zA-Z0-9-*/+.~!@#$%^&*()]{6,20}$/,
   num: /^\d{1,}$/,
   floatNum: /^\d+(\.\d+)?$/,
   character: /^[a-zA-Z]{1,}$/,
