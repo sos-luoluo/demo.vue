@@ -20,6 +20,7 @@ export interface ajaxOptions {
   method?: "POST" | "GET";
   url: string;
   data?: any;
+  processData?: boolean;
 }
 /**
  * 日志格式

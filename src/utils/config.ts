@@ -56,7 +56,7 @@ function getHost() {
  * @property {string} loadingText loading显示的文字
  */
 export const ajaxConfig = {
-  urlHead: environment == "development" ? "/api/v1/h5" : "/api/v1/h5",
+  urlHead: environment == "development" ? "/api/v1" : "/api/v1",
   wxHead:
     environment == "development"
       ? "wss://www.coininn.com/api/v1/"

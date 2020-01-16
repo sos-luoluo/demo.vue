@@ -14,14 +14,34 @@
       <input type="file" class="input" @change="change" />
       <div class="btn">点击上传</div>
     </div>
-    <div class="cropper_pop"></div>
+    <div class="cropper_pop" v-show="popShow" @click="hidePop">
+      <div class="content" @click.stop>
+        <div class="cutting-box">
+          <VueCropper
+            ref="cropper"
+            :img="imgSrc"
+            :info="true"
+            :centerBox="true"
+            :infoTrue="true"
+            :autoCrop="true"
+            :high="true"
+          ></VueCropper>
+        </div>
+        <div class="btn-box">
+          <button size="small" type="primary" @click="cropImage">确定</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue, Ref } from "vue-property-decorator";
+import VueCropper from "vue-cropper";
+import tips from "@/components/Tips/index";
+import confirm from "@/components/Confirm/index";
 
-const uploadApi = function(file: File) {
+const uploadApi = function(formDate: FormData) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve({
@@ -31,13 +51,18 @@ const uploadApi = function(file: File) {
   });
 };
 
-@Component
+@Component({
+  VueCropper
+})
 export default class ListState extends Vue {
   @Prop({ default: 1 }) maxLength!: number;
   @Prop({ default: false }) isCropper!: boolean;
   @Prop([String, Array]) url: undefined | string | string[];
   @Prop(String) uploadImgUrl!: string;
   imgList: Array<string> = [];
+  popShow: boolean = false;
+  imgSrc: string = "";
+  fileName: string = "123";
   created() {
     this.setValue(this.url);
   }
@@ -54,9 +79,34 @@ export default class ListState extends Vue {
     const name = e.currentTarget.files[0].name;
     const type = e.currentTarget.files[0].type;
     let files = e.currentTarget.files;
-    uploadApi(e.currentTarget.files[0]).then((res: any) => {
-      this.imgList.push(res.data);
-    });
+    let file = e.currentTarget.files[0];
+    if (file.status === "ready") {
+      if (!/\.(gif|jpg|jpeg|png|bmp|GIF|JPG|PNG)$/.test(name)) {
+        tips("图片类型必须是.gif,jpeg,jpg,png,bmp中的一种!");
+        return false;
+      }
+      if (!this.isCropper) {
+        let formData = new FormData();
+        formData.append("file", file.raw, file.name);
+        formData.append("type", type);
+        this.upload(formData);
+      } else {
+        this.fileName = file.name;
+        this.popShow = true;
+        var reader = new FileReader();
+        reader.onload = (e: any) => {
+          let data;
+          if (typeof e.target.result === "object") {
+            // 把Array Buffer转化为blob 如果是base64不需要
+            data = window.URL.createObjectURL(new Blob([e.target.result]));
+          } else {
+            data = e.target.result;
+          }
+          this.imgSrc = data;
+        };
+        reader.readAsArrayBuffer(file.raw);
+      }
+    }
   }
   delItem(index: number) {
     this.imgList.splice(index, 1);
@@ -67,6 +117,45 @@ export default class ListState extends Vue {
     } else {
       return this.imgList;
     }
+  }
+  // 图片大小限制
+  beforeAvatarUpload(file: File) {
+    const isLt1M = file.size / 1024 / 1024 < 1;
+    if (!isLt1M) {
+      tips("上传头像图片大小不能超过 1MB!");
+    }
+    return isLt1M;
+  }
+  cropImage() {
+    (<any>this.$refs.cropper).getCropBlob((response: File) => {
+      const formData = new FormData();
+      formData.append("file", response, this.fileName);
+      this.upload(formData, function() {});
+    }, "image/jpeg");
+  }
+  upload(formDate: FormData, callback?: Function) {
+    uploadApi(formDate)
+      .then((res: any) => {
+        this.imgList.push(res.data);
+        this.$emit("add", this.imgList);
+      })
+      .catch(err => {
+        tips("网络错误!");
+      });
+  }
+  // 删除某张图片
+  delImg(i: number) {
+    confirm({
+      title: "提示",
+      text: "是否确认删除?"
+    }).then(res => {
+      this.imgList.splice(i, 1);
+      tips("操作成功!");
+      this.$emit("del", this.imgList);
+    });
+  }
+  hidePop() {
+    this.popShow = false;
   }
 }
 </script>

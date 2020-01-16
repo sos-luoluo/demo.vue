@@ -107,7 +107,7 @@ request.interceptors.response.use(
         msg: "用户未登录"
       });
     } else {
-      return Promise.reject(res);
+      return Promise.reject(res.data);
     }
   },
   function(error) {
@@ -121,7 +121,16 @@ request.interceptors.response.use(
  * @overview 包装了id锁定和ajaxloading
  */
 function ajaxWrap(params: any) {
-  const { url, data, method, id, hasLoading, confirmText, ...options } = params;
+  let {
+    url,
+    data,
+    method,
+    id,
+    hasLoading,
+    confirmText,
+    processData,
+    ...options
+  } = params;
   if (id) {
     if (ajaxLock[id]) {
       return Promise.reject({
@@ -136,6 +145,9 @@ function ajaxWrap(params: any) {
   }
   // const token=localStorage.getItem('token')
   // options.headers.token=token
+  if (processData == true) {
+    data = objectToFormData(data);
+  }
   let result: Promise<any>;
   if (method && method.toLocaleUpperCase() == "GET") {
     result = request.get(url, {
@@ -245,7 +257,7 @@ export class listAjax {
       ),
       method: this.config.method
     })
-      .then(res => {
+      .then((res: any) => {
         this.pageTotal = res.data.pages;
         if (this.pageTotal === 0) {
           this.listState = 2;

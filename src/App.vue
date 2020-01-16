@@ -7,7 +7,7 @@
     <!-- <Tinymce></Tinymce> -->
     <Tips ref="tips" :text="'这是提示'"></Tips>
     <!-- <Confirm :text="'sdfdsf'" @confirm="tips"></Confirm> -->
-    <Upload></Upload>
+    <Upload :isCropper="true"></Upload>
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
@@ -24,6 +24,7 @@ import Tips from "@/components/Tips/tips.vue";
 import model from "@/components/Confirm/index";
 import Upload from "@/components/Upload/upload.vue";
 import { ajax } from "@/utils/ajax";
+import { login } from "@/api/index";
 
 @Component({
   components: {

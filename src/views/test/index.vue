@@ -8,7 +8,7 @@
         <div class="info">执行登录方法</div>
       </div>
       <div class="item">
-        <button class="button">清空缓存</button>
+        <button class="button" @click="clearStorage">清空缓存</button>
         <div class="info">清空所有缓存</div>
       </div>
       <div class="item">
@@ -25,11 +25,18 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import tips from "@/components/Tips/index";
 
 @Component({
   components: {}
 })
-export default class Test extends Vue {}
+export default class Test extends Vue {
+  login() {}
+  clearStorage() {
+    window.localStorage.clear();
+    tips("已清空缓存");
+  }
+}
 </script>
 
 <style lang="less">
