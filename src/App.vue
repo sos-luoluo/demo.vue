@@ -7,7 +7,7 @@
     <!-- <Tinymce></Tinymce> -->
     <Tips ref="tips" :text="'这是提示'"></Tips>
     <!-- <Confirm :text="'sdfdsf'" @confirm="tips"></Confirm> -->
-    <Upload :isCropper="true"></Upload>
+    <Upload :is-cropper="true"></Upload>
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>

@@ -21,14 +21,16 @@
             ref="cropper"
             :img="imgSrc"
             :info="true"
-            :centerBox="true"
-            :infoTrue="true"
-            :autoCrop="true"
+            :center-box="true"
+            :info-true="true"
+            :auto-crop="true"
             :high="true"
           ></VueCropper>
         </div>
         <div class="btn-box">
-          <button size="small" type="primary" @click="cropImage">确定</button>
+          <button class="btn" size="small" type="primary" @click="cropImage">
+            确定
+          </button>
         </div>
       </div>
     </div>
@@ -37,7 +39,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Ref } from "vue-property-decorator";
-import VueCropper from "vue-cropper";
+import { VueCropper } from "vue-cropper";
 import tips from "@/components/Tips/index";
 import confirm from "@/components/Confirm/index";
 
@@ -52,9 +54,12 @@ const uploadApi = function(formDate: FormData) {
 };
 
 @Component({
-  VueCropper
+  components: {
+    VueCropper
+  }
 })
 export default class ListState extends Vue {
+  name = "upload";
   @Prop({ default: 1 }) maxLength!: number;
   @Prop({ default: false }) isCropper!: boolean;
   @Prop([String, Array]) url: undefined | string | string[];
@@ -80,32 +85,30 @@ export default class ListState extends Vue {
     const type = e.currentTarget.files[0].type;
     let files = e.currentTarget.files;
     let file = e.currentTarget.files[0];
-    if (file.status === "ready") {
-      if (!/\.(gif|jpg|jpeg|png|bmp|GIF|JPG|PNG)$/.test(name)) {
-        tips("图片类型必须是.gif,jpeg,jpg,png,bmp中的一种!");
-        return false;
-      }
-      if (!this.isCropper) {
-        let formData = new FormData();
-        formData.append("file", file.raw, file.name);
-        formData.append("type", type);
-        this.upload(formData);
-      } else {
-        this.fileName = file.name;
-        this.popShow = true;
-        var reader = new FileReader();
-        reader.onload = (e: any) => {
-          let data;
-          if (typeof e.target.result === "object") {
-            // 把Array Buffer转化为blob 如果是base64不需要
-            data = window.URL.createObjectURL(new Blob([e.target.result]));
-          } else {
-            data = e.target.result;
-          }
-          this.imgSrc = data;
-        };
-        reader.readAsArrayBuffer(file.raw);
-      }
+    if (!/\.(gif|jpg|jpeg|png|bmp|GIF|JPG|PNG)$/.test(name)) {
+      tips("图片类型必须是.gif,jpeg,jpg,png,bmp中的一种!");
+      return false;
+    }
+    if (!this.isCropper) {
+      let formData = new FormData();
+      formData.append("file", file.raw, file.name);
+      formData.append("type", type);
+      this.upload(formData);
+    } else {
+      this.fileName = file.name;
+      this.popShow = true;
+      var reader = new FileReader();
+      reader.onload = (e: any) => {
+        let data;
+        if (typeof e.target.result === "object") {
+          // 把Array Buffer转化为blob 如果是base64不需要
+          data = window.URL.createObjectURL(new Blob([e.target.result]));
+        } else {
+          data = e.target.result;
+        }
+        this.imgSrc = data;
+      };
+      reader.readAsArrayBuffer(file);
     }
   }
   delItem(index: number) {
@@ -127,10 +130,13 @@ export default class ListState extends Vue {
     return isLt1M;
   }
   cropImage() {
-    (<any>this.$refs.cropper).getCropBlob((response: File) => {
-      const formData = new FormData();
+    let cropper: any = this.$refs.cropper;
+    cropper.getCropBlob((response: File) => {
+      let formData = new FormData();
       formData.append("file", response, this.fileName);
-      this.upload(formData, function() {});
+      this.upload(formData, () => {
+        this.hidePop();
+      });
     }, "image/jpeg");
   }
   upload(formDate: FormData, callback?: Function) {
@@ -138,6 +144,7 @@ export default class ListState extends Vue {
       .then((res: any) => {
         this.imgList.push(res.data);
         this.$emit("add", this.imgList);
+        callback && callback(res);
       })
       .catch(err => {
         tips("网络错误!");
@@ -216,6 +223,36 @@ export default class ListState extends Vue {
       color: #333;
       cursor: pointer;
       pointer-events: none;
+    }
+  }
+  .cropper_pop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .content {
+      width: 80%;
+      height: 80%;
+      background-color: #fff;
+      .cutting-box {
+        width: 100%;
+        height: 100%;
+        border: 1px solid gray;
+      }
+      .btn-box {
+        padding: 10px 0;
+        .btn {
+          padding: 5px 10px;
+          font-size: 14px;
+          border-radius: 2px;
+        }
+      }
     }
   }
 }
