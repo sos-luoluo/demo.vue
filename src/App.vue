@@ -35,11 +35,17 @@ import { login } from "@/api/index";
 export default class App extends Vue {
   show() {
     const tips: any = this.$refs.tips;
-    tips.show("提示信息");
+    model({
+      title: "标题",
+      text: "内容"
+    })
+      .then(res => {
+        tips.show("我同意");
+      })
+      .catch(err => {
+        tips.show("我拒绝");
+      });
   }
-  // tips() {
-  //   console.log("点击了确认");
-  // }
 }
 </script>
 
