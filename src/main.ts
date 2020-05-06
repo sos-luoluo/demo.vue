@@ -12,6 +12,7 @@ import "./icons"; // icon
 import "animate.css";
 import "@/styles/index.less";
 import logManager from "@/utils/log";
+import "@/directive/index";
 
 logManager.pushMsg({
   msg: "web Init",

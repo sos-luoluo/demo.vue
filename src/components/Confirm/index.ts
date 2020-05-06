@@ -2,7 +2,9 @@ import Vue from "vue";
 import confirm from "./confirm.vue";
 const ConfirmConstructor = Vue.extend(confirm);
 
-function model(options: any = {}): Promise<undefined> {
+function model(
+  options: { title?: string; text?: string } = {}
+): Promise<undefined> {
   const instance = new ConfirmConstructor({
     el: document.createElement("div"),
     propsData: options
