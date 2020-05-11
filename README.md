@@ -84,4 +84,45 @@ storage： localStorage操作方法
 ### form
 表单操作方法，已封装表单验证方法
 verificationCodeTime：验证码计时器
+### log
+日志方法，用来记录前端相关错误，可以用于线上调试。
+pushMsg：添加一条日志
+getData：获取所有的日志
+clear： 清除日志
+### mobile
+移动端相关方法
+setPageSize：适用于移动端，初始化页面基础字体以及一些基础样式
+### worker
+Communications：这是网络控制层，如有需要可以加入一些验证数据的方法，一般不用改动
+Transaction：事务处理层，缓存事务，接受网络层的指令并将处理结果返回到网络层
+应用层：这里调用transaction的注册方法，将业务注册到事务处理层即可
+### interface
+这里定义所有的数据模型
+## 多语言解决方法
+多语言使用vue-i18n方案，详情请参见官方文档http://kazupon.github.io/vue-i18n/zh/
+## 表单验证解决方案
+使用了vee-validate,详情请参见官方文档http://vee-validate.logaretm.com/
 
+# License
+
+MIT License
+
+Copyright (c) 2019-present luoluo
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
