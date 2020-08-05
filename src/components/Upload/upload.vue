@@ -91,6 +91,7 @@ export default class ListState extends Vue {
     }
     if (!this.isCropper) {
       let formData = new FormData();
+      debugger
       formData.append("file", file.raw, file.name);
       formData.append("type", type);
       this.upload(formData);

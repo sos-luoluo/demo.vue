@@ -5,7 +5,7 @@ Vue.use(VueRouter);
 // 路由异步加载组件
 const routes = [
   {
-    path: "/",
+    path: "/index",
     name: "home",
     component: () => import("../views/Home.vue")
   },
@@ -18,12 +18,17 @@ const routes = [
     path: "/test",
     name: "test",
     component: () => import("../views/test/index.vue")
+  },
+  {
+    path: "/gobang",
+    name: "gobang",
+    component: () => import("../views/Gobang.vue")
   }
 ];
 
 const router = new VueRouter({
-  mode: "history",
-  base: process.env.BASE_URL,
+  mode: "hash",
+  base: "/manager",
   routes
 });
 

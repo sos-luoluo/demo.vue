@@ -11,5 +11,16 @@ import { Component, Vue } from "vue-property-decorator";
 @Component({
   components: {}
 })
-export default class Home extends Vue {}
+export default class Home extends Vue {
+  created() {
+    console.log("created", midway);
+  }
+  mounted() {
+    alert(0);
+    console.log("mounted", midway);
+  }
+  onmounted() {
+    console.log("onmounted", midway);
+  }
+}
 </script>

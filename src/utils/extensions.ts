@@ -24,6 +24,10 @@ Object.defineProperty(Array.prototype, "sum", {
   }
 });
 
+interface Array<T> {
+  sum(propertyOrFunc: string | undefined | Function): number;
+}
+
 /**
  * 数组分组
  * @param {function} fn
@@ -85,12 +89,12 @@ Object.defineProperty(Object.prototype, "isEmpty", {
 /**
  * 判断对象是否为数组
  */
-Object.defineProperty(Object.prototype, "isArray", {
-  value: function(): boolean {
-    return (
-      typeof this === "object" &&
-      typeof (<number | undefined>this.length) === "number" &&
-      typeof this.splice === "function"
-    );
-  }
-});
+// Object.defineProperty(Object.prototype, "isArray", {
+//   value: function(): boolean {
+//     return (
+//       typeof this === "object" &&
+//       typeof (<number | undefined>this.length) === "number" &&
+//       typeof this.splice === "function"
+//     );
+//   }
+// });

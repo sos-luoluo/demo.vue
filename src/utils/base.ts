@@ -14,11 +14,12 @@ import { key } from "./config";
  * @param {object} objs 待合并对象数组
  */
 export function extend(isDeep?: boolean, ...objs: object[]): any {
+  var result;
   if (typeof arguments[0] === "boolean" && arguments[0] === true) {
     for (let k = 1; k < arguments.length; k++) {
       if (typeof arguments[k] === "object") {
         if (!result) {
-          var result = arguments[k];
+          result = arguments[k];
           continue;
         }
         for (var key in arguments[k]) {
@@ -34,7 +35,7 @@ export function extend(isDeep?: boolean, ...objs: object[]): any {
     for (let i = 0; i <= arguments.length; i++) {
       if (typeof arguments[i] === "object") {
         if (!result) {
-          var result = arguments[i];
+          result = arguments[i];
           continue;
         }
 
@@ -315,7 +316,7 @@ export const base64 = {
     var chr1, chr2, chr3;
     var enc1, enc2, enc3, enc4;
     var i = 0;
-    input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+    input = input.replace(/[^A-Za-z0-9+/=]/g, "");
     while (i < input.length) {
       enc1 = _keyStr.indexOf(input.charAt(i++));
       enc2 = _keyStr.indexOf(input.charAt(i++));
@@ -475,21 +476,17 @@ export class WorkerManage {
     try {
       if (result.to !== this.config.name) {
         throw new Error("name error");
-        return;
       }
       if (new Date().getTime() - result.timestamp > 60000) {
         throw new Error("time out");
-        return;
       }
       if (!this.config.handle[result.key]) {
         throw new Error("handle missing");
-        return;
       }
       if (result.data.code === 0) {
         this.config.handle[result.key](result.data.data);
       } else {
         throw new Error("handle error");
-        return;
       }
     } catch (e) {
       console.error(e);
