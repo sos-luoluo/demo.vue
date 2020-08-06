@@ -4,7 +4,7 @@ import { extend } from "@/utils/base";
  * 配置信息
  */
 const config = {
-  deeper: 1
+  deeper: 2
 };
 
 /**
@@ -108,7 +108,7 @@ function getWeightScore(
     getCommonPostion(position, newBoard, 3)
   ];
   result.forEach(item => {
-    score += Math.pow(2, item.list.length) * item.value;
+    score += weightScore(item.list.length, item.value);
   });
   deeper--;
   if (deeper >= 0) {
@@ -120,7 +120,7 @@ function getWeightScore(
       const clScore = clList.sum((item: any) => {
         return item.score;
       });
-      score += clScore * 0.5;
+      score += clScore * 0.3;
     }
   }
   return score;
@@ -140,7 +140,7 @@ function getCommonPostion(
   let res = [position],
     x = position.x,
     y = position.y,
-    value = 1; // 价值，两边有空隙，价值较大
+    value = 0; // 价值，两边有空隙，价值较大
   switch (direction) {
     case 0:
       for (let j = y + 1; j < board[x].length; j++) {
@@ -263,4 +263,28 @@ function getCommonPostion(
     list: res,
     value: value
   };
+}
+
+/**
+ * 确实权值的算法
+ * @param [length] number 符合条件长度
+ * @param [value] number 两边空隙情况
+ */
+function weightScore(length: number, value: number) {
+  switch (length) {
+    case 5:
+      return 10000;
+    case 4:
+      if (value == 2) {
+        return 1000;
+      } else {
+        return 100;
+      }
+    default:
+      if (value > 0) {
+        return Math.pow(2, length) * (1 + value * 0.5);
+      } else {
+        return 0;
+      }
+  }
 }

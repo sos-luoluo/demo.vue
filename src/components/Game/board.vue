@@ -46,8 +46,9 @@ export default class Board extends Vue {
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.14rem;
+        font-size: 0.12rem;
         color: aqua;
+        overflow: hidden;
         &.white {
           border: 0.01rem solid #999;
           box-shadow: 0.05rem 0.05rem 0.05rem #999;
