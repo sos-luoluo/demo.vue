@@ -4,7 +4,7 @@ import { extend } from "@/utils/base";
  * 配置信息
  */
 const config = {
-  deeper: 2
+  deeper: 1
 };
 
 /**
@@ -120,7 +120,7 @@ function getWeightScore(
       const clScore = clList.sum((item: any) => {
         return item.score;
       });
-      score += clScore * 0.3;
+      score += clScore * 0.5;
     }
   }
   return score;
@@ -273,16 +273,26 @@ function getCommonPostion(
 function weightScore(length: number, value: number) {
   switch (length) {
     case 5:
-      return 10000;
+      return 1000;
     case 4:
       if (value == 2) {
-        return 1000;
-      } else {
         return 100;
+      } else if (value == 1) {
+        return 20;
+      } else {
+        return 0;
+      }
+    case 3:
+      if (value == 2) {
+        return 18;
+      } else if (value == 1) {
+        return 8;
+      } else {
+        return 0;
       }
     default:
       if (value > 0) {
-        return Math.pow(2, length) * (1 + value * 0.5);
+        return Math.pow(2, length) * value;
       } else {
         return 0;
       }

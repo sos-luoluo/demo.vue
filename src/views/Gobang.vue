@@ -94,7 +94,7 @@ export default class Gobang extends Vue {
       if (this.rightPlayer == "黑子-电脑") {
         setTimeout(() => {
           this.pcPlayer(1);
-        }, 100);
+        }, 10);
       }
     } else if (this.gameState == 2) {
       this.board[i][j].value = 1;
@@ -103,7 +103,7 @@ export default class Gobang extends Vue {
       if (this.leftPlayer == "白子-电脑") {
         setTimeout(() => {
           this.pcPlayer(0);
-        }, 100);
+        }, 10);
       }
     } else if (this.gameState == 3) {
       this.gameState = 0;
@@ -157,7 +157,7 @@ export default class Gobang extends Vue {
       });
       setTimeout(() => {
         this.playHandle(7, 7);
-      }, 100);
+      }, 10);
     }
   }
   setPlayer(info: { player: "leftPlayer" | "rightPlayer"; type: string }) {
