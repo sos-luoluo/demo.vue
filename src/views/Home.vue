@@ -1,7 +1,10 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    This is index page.
+    <h3 class="tc">还没想好做什么网站</h3>
+    <h6 class="tr">---落落</h6>
+    <router-link :to="{ path: '/gobang' }"
+      >点击这里下五子棋,适合手机上玩</router-link
+    >
   </div>
 </template>
 
@@ -12,15 +15,8 @@ import { Component, Vue } from "vue-property-decorator";
   components: {}
 })
 export default class Home extends Vue {
-  created() {
-    console.log("created", midway);
-  }
-  mounted() {
-    alert(0);
-    console.log("mounted", midway);
-  }
-  onmounted() {
-    console.log("onmounted", midway);
-  }
+  created() {}
+  mounted() {}
+  onmounted() {}
 }
 </script>

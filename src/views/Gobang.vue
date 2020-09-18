@@ -26,9 +26,10 @@
       <div class="text">{{ infoText }}</div>
     </div>
     <div class="btn_box">
-      <button class="btn" @click="autoPlay(0)">电脑自动对战</button>
+      <button class="btn" @click="autoPlay(0)">自动对战</button>
       <button class="btn" @click="autoPlay(1)">人机对战</button>
       <button class="btn" @click="autoPlay(2)">机人对战</button>
+      <button class="btn" @click="test()">测试</button>
     </div>
   </div>
 </template>
@@ -36,7 +37,8 @@
 import { Component, Vue } from "vue-property-decorator";
 import Board from "@/components/Game/board.vue";
 import { getWinner } from "@/utils/game";
-import { gobangAI } from "@/utils/GobangAI";
+import { gobangAI, testParam } from "@/utils/GobangAI";
+declare var window: any;
 @Component({
   components: {
     Board
@@ -57,6 +59,15 @@ export default class Gobang extends Vue {
       }))
   );
   playerIndex: number = 0;
+  endFn!: Function;
+  test() {
+    this.endFn = testParam(() => {
+      this.autoPlay(0);
+    });
+    setTimeout(() => {
+      window.startTest();
+    }, 100);
+  }
   initGame(): void {
     this.gameState = 0;
     this.infoText = "游戏重新开始";
@@ -80,6 +91,9 @@ export default class Gobang extends Vue {
     this.gameState = 3;
     this.infoText =
       "游戏已结束,玩家" + (player == 0 ? "白子" : "黑子") + "获得胜利";
+    if (this.endFn) {
+      this.endFn(player);
+    }
   }
   playHandle(i: number, j: number): void {
     if (this.gameState == 0) {
@@ -138,12 +152,23 @@ export default class Gobang extends Vue {
     if (position) {
       this.playHandle(position.x, position.y);
     } else {
-      alert("没有找到可下子的地方");
+      // alert("没有找到可下子的地方");
+      if (this.endFn) {
+        this.endFn(null);
+      }
     }
   }
   autoPlay(type: number) {
     this.initGame();
     this.startGame();
+    this.setPlayer({
+      player: "leftPlayer",
+      type: "白子-玩家"
+    });
+    this.setPlayer({
+      player: "rightPlayer",
+      type: "黑子-玩家"
+    });
     if (type == 0 || type == 1) {
       this.setPlayer({
         player: "rightPlayer",
@@ -200,9 +225,9 @@ export default class Gobang extends Vue {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.2rem;
+    padding: 0.2rem 0;
     .btn {
-      width: 1rem;
+      width: 0.8rem;
       height: 0.3rem;
       background-color: darkmagenta;
       color: #fff;

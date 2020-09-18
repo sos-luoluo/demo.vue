@@ -4,7 +4,8 @@ import { extend } from "@/utils/base";
  * 配置信息
  */
 const config = {
-  deeper: 1
+  deeper: 3,
+  layer: 0.5
 };
 
 /**
@@ -20,10 +21,6 @@ export function gobangAI(
     score: number;
     position: { x: number; y: number };
   }> = positionAndScore(board, player, config.deeper);
-  // let bestList: Array<{
-  //   score: number;
-  //   position: { x: number; y: number };
-  // }> = [];
   let worstList: Array<{
     score: number;
     position: { x: number; y: number };
@@ -47,11 +44,15 @@ export function gobangAI(
 function positionAndScore(
   board: Array<Array<any>>,
   player: number,
-  deeper: number = 0
+  deeper: number,
+  position?: { x: number; y: number }
 ): Array<{ score: number; position: { x: number; y: number } }> {
-  const emptyPositionList: Array<any> = getAllEmptyPositionList(board);
+  const emptyPositionList: Array<any> = getAllEmptyPositionList(
+    board,
+    position
+  );
   const res = emptyPositionList
-    .map(item => {
+    .map((item, i) => {
       return {
         score: getWeightScore(board, player, item, deeper),
         position: item
@@ -60,7 +61,7 @@ function positionAndScore(
     .sort((a, b) => {
       return b.score - a.score;
     })
-    .slice(0, 3);
+    .slice(0, 2);
   return res;
 }
 
@@ -69,19 +70,31 @@ function positionAndScore(
  *  @param [board] Array 棋盘现状
  */
 function getAllEmptyPositionList(
-  board: Array<Array<any>>
+  board: Array<Array<any>>,
+  position?: { x: number; y: number }
 ): Array<{ x: number; y: number }> {
   let res: Array<{ x: number; y: number }> = [];
-  board.forEach((item, i) => {
-    item.forEach((cl, j) => {
-      if (cl === null) {
+  let iStart = position && position.x - 4 > 0 ? position.x - 4 : 0,
+    iEnd =
+      position && position.x + 4 <= board.length
+        ? position.x + 4
+        : board.length,
+    jStart = position && position.y - 4 > 0 ? position.y - 4 : 0,
+    jEnd =
+      position && position.y + 4 <= board.length
+        ? position.y + 4
+        : board.length;
+
+  for (let i = iStart; i < iEnd; i++) {
+    for (let j = jStart; j < jEnd; j++) {
+      if (board[i][j] === null) {
         res.push({
           x: i,
           y: j
         });
       }
-    });
-  });
+    }
+  }
   return res;
 }
 
@@ -111,16 +124,20 @@ function getWeightScore(
     score += weightScore(item.list.length, item.value);
   });
   deeper--;
-  if (deeper >= 0) {
+  if (score > 200) {
+    score = 200;
+  }
+  if (deeper >= 0 && score < 200) {
     const clList: Array<{
       score: number;
       position: { x: number; y: number };
-    }> = positionAndScore(newBoard, player, deeper);
+    }> = positionAndScore(newBoard, player, score <= 16 ? 0 : deeper, position);
+    const clScore = clList.sum((item: any) => {
+      return item.score;
+    });
     if (clList.length > 0) {
-      const clScore = clList.sum((item: any) => {
-        return item.score;
-      });
-      score += clScore * 0.5;
+      score = score * config.layer;
+      score += (clScore * (1 - config.layer)) / clList.length;
     }
   }
   return score;
@@ -266,25 +283,26 @@ function getCommonPostion(
 }
 
 /**
- * 确实权值的算法
+ * 确认权值的算法
  * @param [length] number 符合条件长度
  * @param [value] number 两边空隙情况
  */
 function weightScore(length: number, value: number) {
+  if (length >= 5) {
+    return 200;
+  }
   switch (length) {
-    case 5:
-      return 1000;
     case 4:
       if (value == 2) {
-        return 100;
+        return 50;
       } else if (value == 1) {
-        return 20;
+        return 18;
       } else {
         return 0;
       }
     case 3:
       if (value == 2) {
-        return 18;
+        return 16;
       } else if (value == 1) {
         return 8;
       } else {
@@ -298,3 +316,543 @@ function weightScore(length: number, value: number) {
       }
   }
 }
+
+// 测试程序
+declare var window: any;
+export function testParam(startCtrl: Function) {
+  const testData: Array<any> = [];
+  (config.layer = 0), (config.deeper = 0);
+  function startGame() {
+    if (config.layer < 0.9) {
+      config.layer += 0.1;
+    } else if (config.deeper < 3) {
+      config.layer = 0.1;
+      config.deeper++;
+    } else if (config.layer >= 0.9 && config.deeper >= 3) {
+      console.log("测试程序已经结束");
+      return;
+    }
+    startCtrl();
+  }
+  function endGame(res: 0 | 1 | null) {
+    testData.push({
+      ...config,
+      result: res
+    });
+    setTimeout(() => {
+      startGame();
+    }, 10);
+  }
+  window.startTest = startGame;
+  window.getTestData = function() {
+    console.log(testData);
+    window.testResult = testData;
+  };
+  return endGame;
+}
+// 测试结果数据
+const resultData = [
+  {
+    deeper: 0,
+    layer: 0.1,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.2,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.30000000000000004,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.4,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.5,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.6,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.7,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.7999999999999999,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.8999999999999999,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.9999999999999999,
+    result: null
+  },
+  {
+    deeper: 1,
+    layer: 0.1,
+    result: 1
+  },
+  {
+    deeper: 1,
+    layer: 0.2,
+    result: null
+  },
+  {
+    deeper: 1,
+    layer: 0.30000000000000004,
+    result: 1
+  },
+  {
+    deeper: 1,
+    layer: 0.4,
+    result: null
+  },
+  {
+    deeper: 1,
+    layer: 0.5,
+    result: 0
+  },
+  {
+    deeper: 1,
+    layer: 0.6,
+    result: null
+  },
+  {
+    deeper: 1,
+    layer: 0.7,
+    result: null
+  },
+  {
+    deeper: 1,
+    layer: 0.7999999999999999,
+    result: null
+  },
+  {
+    deeper: 1,
+    layer: 0.8999999999999999,
+    result: null
+  },
+  {
+    deeper: 1,
+    layer: 0.9999999999999999,
+    result: null
+  },
+  {
+    deeper: 2,
+    layer: 0.1,
+    result: 1
+  },
+  {
+    deeper: 2,
+    layer: 0.2,
+    result: null
+  },
+  {
+    deeper: 2,
+    layer: 0.30000000000000004,
+    result: 1
+  },
+  {
+    deeper: 2,
+    layer: 0.4,
+    result: 0
+  },
+  {
+    deeper: 2,
+    layer: 0.5,
+    result: 1
+  },
+  {
+    deeper: 2,
+    layer: 0.6,
+    result: null
+  },
+  {
+    deeper: 2,
+    layer: 0.7,
+    result: null
+  },
+  {
+    deeper: 2,
+    layer: 0.7999999999999999,
+    result: null
+  },
+  {
+    deeper: 2,
+    layer: 0.8999999999999999,
+    result: null
+  },
+  {
+    deeper: 2,
+    layer: 0.9999999999999999,
+    result: null
+  },
+  {
+    deeper: 3,
+    layer: 0.1,
+    result: 1
+  },
+  {
+    deeper: 3,
+    layer: 0.2,
+    result: 0
+  },
+  {
+    deeper: 3,
+    layer: 0.30000000000000004,
+    result: null
+  },
+  {
+    deeper: 3,
+    layer: 0.4,
+    result: 0
+  },
+  {
+    deeper: 3,
+    layer: 0.5,
+    result: 0
+  },
+  {
+    deeper: 3,
+    layer: 0.6,
+    result: null
+  },
+  {
+    deeper: 3,
+    layer: 0.7,
+    result: null
+  },
+  {
+    deeper: 3,
+    layer: 0.7999999999999999,
+    result: 0
+  },
+  {
+    deeper: 3,
+    layer: 0.8999999999999999,
+    result: null
+  },
+  {
+    deeper: 3,
+    layer: 0.9999999999999999,
+    result: null
+  },
+  {
+    deeper: 4,
+    layer: 0.1,
+    result: 0
+  },
+  {
+    deeper: 4,
+    layer: 0.2,
+    result: null
+  },
+  {
+    deeper: 4,
+    layer: 0.30000000000000004,
+    result: 0
+  },
+  {
+    deeper: 4,
+    layer: 0.4,
+    result: 0
+  },
+  {
+    deeper: 4,
+    layer: 0.5,
+    result: null
+  },
+  {
+    deeper: 4,
+    layer: 0.6,
+    result: null
+  },
+  {
+    deeper: 4,
+    layer: 0.7,
+    result: null
+  },
+  {
+    deeper: 4,
+    layer: 0.7999999999999999,
+    result: 0
+  },
+  {
+    deeper: 4,
+    layer: 0.8999999999999999,
+    result: null
+  },
+  {
+    deeper: 4,
+    layer: 0.9999999999999999,
+    result: null
+  }
+];
+
+const resultData2 = [
+  {
+    deeper: 0,
+    layer: 0.1,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.2,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.30000000000000004,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.4,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.5,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.6,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.7,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.7999999999999999,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.8999999999999999,
+    result: null
+  },
+  {
+    deeper: 0,
+    layer: 0.9999999999999999,
+    result: null
+  },
+  {
+    deeper: 1,
+    layer: 0.1,
+    result: 1
+  },
+  {
+    deeper: 1,
+    layer: 0.2,
+    result: null
+  },
+  {
+    deeper: 1,
+    layer: 0.30000000000000004,
+    result: 1
+  },
+  {
+    deeper: 1,
+    layer: 0.4,
+    result: null
+  },
+  {
+    deeper: 1,
+    layer: 0.5,
+    result: 0
+  },
+  {
+    deeper: 1,
+    layer: 0.6,
+    result: null
+  },
+  {
+    deeper: 1,
+    layer: 0.7,
+    result: null
+  },
+  {
+    deeper: 1,
+    layer: 0.7999999999999999,
+    result: null
+  },
+  {
+    deeper: 1,
+    layer: 0.8999999999999999,
+    result: null
+  },
+  {
+    deeper: 1,
+    layer: 0.9999999999999999,
+    result: null
+  },
+  {
+    deeper: 2,
+    layer: 0.1,
+    result: 1
+  },
+  {
+    deeper: 2,
+    layer: 0.2,
+    result: null
+  },
+  {
+    deeper: 2,
+    layer: 0.30000000000000004,
+    result: 1
+  },
+  {
+    deeper: 2,
+    layer: 0.4,
+    result: 0
+  },
+  {
+    deeper: 2,
+    layer: 0.5,
+    result: 1
+  },
+  {
+    deeper: 2,
+    layer: 0.6,
+    result: null
+  },
+  {
+    deeper: 2,
+    layer: 0.7,
+    result: null
+  },
+  {
+    deeper: 2,
+    layer: 0.7999999999999999,
+    result: null
+  },
+  {
+    deeper: 2,
+    layer: 0.8999999999999999,
+    result: null
+  },
+  {
+    deeper: 2,
+    layer: 0.9999999999999999,
+    result: null
+  },
+  {
+    deeper: 3,
+    layer: 0.1,
+    result: 1
+  },
+  {
+    deeper: 3,
+    layer: 0.2,
+    result: 0
+  },
+  {
+    deeper: 3,
+    layer: 0.30000000000000004,
+    result: null
+  },
+  {
+    deeper: 3,
+    layer: 0.4,
+    result: 0
+  },
+  {
+    deeper: 3,
+    layer: 0.5,
+    result: 0
+  },
+  {
+    deeper: 3,
+    layer: 0.6,
+    result: null
+  },
+  {
+    deeper: 3,
+    layer: 0.7,
+    result: null
+  },
+  {
+    deeper: 3,
+    layer: 0.7999999999999999,
+    result: 0
+  },
+  {
+    deeper: 3,
+    layer: 0.8999999999999999,
+    result: null
+  },
+  {
+    deeper: 3,
+    layer: 0.9999999999999999,
+    result: null
+  },
+  {
+    deeper: 4,
+    layer: 0.1,
+    result: 0
+  },
+  {
+    deeper: 4,
+    layer: 0.2,
+    result: null
+  },
+  {
+    deeper: 4,
+    layer: 0.30000000000000004,
+    result: 0
+  },
+  {
+    deeper: 4,
+    layer: 0.4,
+    result: 0
+  },
+  {
+    deeper: 4,
+    layer: 0.5,
+    result: null
+  },
+  {
+    deeper: 4,
+    layer: 0.6,
+    result: null
+  },
+  {
+    deeper: 4,
+    layer: 0.7,
+    result: null
+  },
+  {
+    deeper: 4,
+    layer: 0.7999999999999999,
+    result: 0
+  },
+  {
+    deeper: 4,
+    layer: 0.8999999999999999,
+    result: null
+  },
+  {
+    deeper: 4,
+    layer: 0.9999999999999999,
+    result: null
+  }
+];

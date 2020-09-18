@@ -5,7 +5,7 @@ Vue.use(VueRouter);
 // 路由异步加载组件
 const routes = [
   {
-    path: "/index",
+    path: "/",
     name: "home",
     component: () => import("../views/Home.vue")
   },
@@ -28,7 +28,6 @@ const routes = [
 
 const router = new VueRouter({
   mode: "hash",
-  base: "/manager",
   routes
 });
 
